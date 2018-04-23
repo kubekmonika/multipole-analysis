@@ -28,18 +28,22 @@ if size(phi, 1) > 1
     phi = phi';
 end
 if sum([isscalar(k), isscalar(r)]) < 2
-    error('Zle wartosci: k,r musza byc skalarem')
+    error('Zle wartosci: k,r musza byc skalarami')
 end
 kr = k * r;
 
 % modyfikujemy funkcje Legendre'a, zeby uwzglednic m<0
+% https://dlmf.nist.gov/14.9#E3
 global lgr
 if m < 0
     lgr = (-1)^abs(m) * gamma(n-abs(m)+1) / gamma(n+abs(m)+1);
 else
     lgr = 1;
 end
-
+%%%%%% UWAGA!
+%%%%%% m ma wartosci od 0 do n
+%%%%%% P jest indeksowane od 1, wiec bierzemy P(m+1) dla oznaczenia funkcji
+%%%%%% stowarzyszonej Legendre'a P^m_n
 % liczymy vsh
 if kind == 'M'
     har = zeros(length(phi), length(theta), 3);
@@ -94,7 +98,7 @@ end
 
 function h = sphhankel(n, z)
 % sferyczna funkcja Hankela pierwszego rodzaju
-h = sqrt(pi ./ (2*z)) .* besselh(n, 1, z);
+h = sqrt(pi ./ (2*z)) .* besselh(n+1/2, 1, z);
 % h = sphbessel(1, n, z) + 1j * sphbessel(2, n, z);
 end
 

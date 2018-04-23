@@ -25,7 +25,8 @@ k = sqrt(4 * pi^2 * n^2 / lambda^2); % [1/m]
 %% obliczamy pole dla calego przekroju dlugosci fali
 filename = 'C:\Users\Monika\Documents\MATLAB\analiza_multipolowa\krzem_n.txt';
 [E, R, eneis, n, theta, phi] = field_sphere_si(100, 100, filename);
-the_end()
+the_end() % funkcja daje sygnal, ze obliczenia sie skonczyly
+
 %% obliczamy wspolczynniki rozproszenia
 C = coefforeverywavelength(E, R, eneis, n, theta, phi);
 
