@@ -15,11 +15,14 @@ function har = vsh(kind, n, m, theta, phi, r, k)
 %   ostatni wymiar to skladowe (r, az, el) wektora dla 
 %   danych wartosci phi i theta.
 
+% wiersze - phi
+% kolumny - theta
+
 h = @sphhankel;
 dh = @sphhankelderivative;
 % upewniamy sie ze argumenty sa poziomymi wektorami
-if m > n
-    error('Blad: m > n')
+if abs(m) > n
+    error('Blad: |m| > n')
 end
 if size(theta, 1) > 1
     theta = theta';
@@ -33,10 +36,10 @@ end
 kr = k * r;
 
 % modyfikujemy funkcje Legendre'a, zeby uwzglednic m<0
-% https://dlmf.nist.gov/14.9#E3
+% https://en.wikipedia.org/wiki/Associated_Legendre_polynomials#Negative_m_and/or_negative_ℓ
 global lgr
 if m < 0
-    lgr = (-1)^abs(m) * gamma(n-abs(m)+1) / gamma(n+abs(m)+1);
+    lgr = (-1)^abs(m) * factorial(n - abs(m)) / factorial(n + abs(m));
 else
     lgr = 1;
 end

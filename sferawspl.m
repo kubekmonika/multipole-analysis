@@ -12,19 +12,16 @@ function [x, y, z, az, el, r, theta, phi] = sferawspl(R, az_n, el_n)
 %   az, el, r - wspolrzedne sferyczne
 %   theta, phi - katy sferyczne
 
-% wspolrzedne azymutalne
-az = ones(az_n, el_n);
-theta = linspace(0, 2*pi, az_n);
-for i = 1 : az_n
-    az(:, i) = theta(i);
-end
+% wiersze - phi - el
+% kolumny - theta - az
+
+%% wspolrzedne azymutalne
+theta = linspace(1e-4, 2*pi-1e-4, az_n);
+az = theta .* ones(el_n, az_n);
 az = az(:);
 % wspolrzedne zenitalne
-el = ones(az_n, el_n);
 phi = linspace(-pi/2, pi/2, el_n);
-for i = 1 : el_n
-    el(i, :) = phi(i);
-end
+el = phi' .* ones(el_n, az_n);
 el = el(:);
 % wspolrzedne promienia
 r = ones(az_n * el_n, 1) * R;

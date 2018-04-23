@@ -22,7 +22,12 @@ function anm = a_nm(m, n, k, e, R, theta, phi)
 % Zwraca wartosc wspolczynnika rozproszenia a_nm
 assert(n >= abs(m), 'Blad: |m| > n')
 % VSH
-N = vsh('N', n, m, theta, phi, R, k);
+% N = vsh('N', n, m, theta, phi, R, k);
+if m >= 0
+    N = vsh('N', n, m, theta, phi, R, k);
+else
+    N = (-1)^(abs(m)) * conj(vsh('N', n, abs(m), theta, phi, R, k));
+end
 % przeksztalcamy pole
 E = sphreshapefield(e, length(theta), length(phi));
 % zastepujemy NaN wartoscia 0

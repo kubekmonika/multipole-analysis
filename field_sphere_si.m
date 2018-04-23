@@ -1,4 +1,4 @@
-function [E, R, eneis, n, theta, phi] = field_sphere_si(az_n, el_n, filename)
+function [E, R, eneis, n, theta, phi] = field_sphere_si(az_n, el_n)
 % Oblicza pole dla krzemowej sfery o srednicy 200nm, 
 % kolejno dla roznych dlugosci fali padajacej 
 % enei=(350, 950)nm co 10 nm.
@@ -10,14 +10,18 @@ function [E, R, eneis, n, theta, phi] = field_sphere_si(az_n, el_n, filename)
 
 % IMPORTUJEMY DLUGOSCI FALI
 % filename = '/home/monika/HDD/MATLAB/analiza_multipolowa/krzem_n.txt';
-delimiter = '\t';
-formatSpec = '%f%f%[^\n\r]';
-fileID = fopen(filename,'r');
-dataArray = textscan(fileID, formatSpec, 'Delimiter', delimiter, 'TextType', 'string',  'ReturnOnError', false);
-fclose(fileID);
-eneis = dataArray{:, 1}' * 1000; %[nm]
-n = dataArray{:, 2}';
-clearvars filename delimiter formatSpec fileID dataArray ans;
+% delimiter = '\t';
+% formatSpec = '%f%f%[^\n\r]';
+% fileID = fopen(filename,'r');
+% dataArray = textscan(fileID, formatSpec, 'Delimiter', delimiter, 'TextType', 'string',  'ReturnOnError', false);
+% fclose(fileID);
+% eneis = dataArray{:, 1}' * 1000; %[nm]
+% n = dataArray{:, 2}';
+% clearvars filename delimiter formatSpec fileID dataArray ans;
+
+% definiujemy parametry dla osrodka w ktorym znajduje sie sfera
+eneis = linspace(450, 950, 100);
+n = ones(1, length(eneis));
 
 % TWORZYMY OBIEKTY
 global op p bem exc x y z
@@ -51,6 +55,6 @@ function e = calculatefield(enei)
 % Liczy pole dla zadanej dlugosci fali enei
 global op p bem exc x y z
 sig = bem \ exc( p, enei );
-emesh = meshfield( p, x, y, z, op, 'mindist', 1, 'nmax', 1000 , 'waitbar', 0);
+emesh = meshfield( p, x, y, z, op, 'mindist', 1, 'nmax', 5000 , 'waitbar', 0);
 e = emesh( sig ) ; 
 end
