@@ -1,91 +1,89 @@
-function har = vsh(kind, n, m, theta, phi, r, k)
+function har = vsh(kind, l, m, theta, phi, r, k)
 % Wektorowe harmoniki sferyczne
 % 
-%   VSH(kind, n, m, theta, phi, r, k)
+%   VSH(kind, l, m, theta, phi, r, k)
 % 
 %   kind - typ funkcji: 'M' lub 'N'
-%   n - stopień (degree)
+%   l - stopień (degree)
 %   m - rząd (order)
-%   theta - katy azymutalne (az)
-%   phi - katy zenitalne (el)
+%   phi - katy azymutalne (az)
+%   theta - katy zenitalne (el)
 %   r - promien, odleglosc od srodka ukladu wspolrzednych
 %   k - wektor falowy w danym osrodku
 % 
 %   Zwraca tablice o wymiarach (phi x theta x 3), gdzie 
-%   ostatni wymiar to skladowe (r, az, el) wektora dla 
+%   ostatni wymiar to skladowe (r, el, az) wektora dla 
 %   danych wartosci phi i theta.
 
 % wiersze - phi
 % kolumny - theta
 
 h = @sphhankel;
-dh = @sphhankelderivative;
-% upewniamy sie ze argumenty sa poziomymi wektorami
-if abs(m) > n
-    error('Blad: |m| > n')
+
+if m > l
+    error('Blad: m > l')
 end
+% upewniamy sie ze argumenty sa poziomymi wektorami
 if size(theta, 1) > 1
     theta = theta';
 end
 if size(phi, 1) > 1
     phi = phi';
 end
+% upewniamy sie, ze k i r sa skalarami
 if sum([isscalar(k), isscalar(r)]) < 2
     error('Zle wartosci: k,r musza byc skalarami')
 end
+
 kr = k * r;
 
-% modyfikujemy funkcje Legendre'a, zeby uwzglednic m<0
-% https://en.wikipedia.org/wiki/Associated_Legendre_polynomials#Negative_m_and/or_negative_ℓ
-global lgr
-if m < 0
-    lgr = (-1)^abs(m) * factorial(n - abs(m)) / factorial(n + abs(m));
-else
-    lgr = 1;
-end
 %%%%%% UWAGA!
-%%%%%% m ma wartosci od 0 do n
+%%%%%% m ma wartosci od 0 do l
 %%%%%% P jest indeksowane od 1, wiec bierzemy P(m+1) dla oznaczenia funkcji
-%%%%%% stowarzyszonej Legendre'a P^m_n
+%%%%%% stowarzyszonej Legendre'a P^m_l
+
 % liczymy vsh
 if kind == 'M'
     har = zeros(length(phi), length(theta), 3);
-    alpha = ( h(n, kr) .* exp(1j*m*phi) );
+    alpha = ( h(l, kr) .* exp(1j*m*phi) );
     % skladowa r
     har(:,:,1) = alpha' .* zeros(1, length(theta)); 
-    % skladowa azymutalna
-    har(:,:,2) = 1j * alpha' .* Pi(n, m, theta); 
     % skladowa zenitalna
-    har(:,:,3) = -alpha' .* Tau(n, m, theta);
+    har(:,:,2) = 1j * alpha' .* Pi(l, m, theta); 
+    % skladowa azymutalna
+    har(:,:,3) = -alpha' .* Tau(l, m, theta);
 elseif kind == 'N'
-    P = lgr * legendre(n, cos(theta));
+    P = legendre(l, cos(theta));
     har = zeros(length(phi), length(theta), 3);
-    alpha = ( h(n, kr) + kr * dh(n, kr) ) / kr * exp(1j*m*phi);
+% pomijamy osobne liczenie dh i od razu wlaczamy je do calego wyrazenia
+%     dh = n ./ kr .* sphhankel(n, kr) - sphhankel(n+1, kr);
+%     h = sqrt(pi ./ (2*kr)) .* besselh(n+1/2, 1, kr);
+    alpha = ( h(l, kr) + (l .* sphhankel(l, kr) - kr*sphhankel(l+1, kr))) / kr * exp(1j*m*phi);
     % skladowa r
-    har(:,:,1) = n * (n + 1) * h(n, kr) / kr * P(abs(m)+1, :) .* exp(1j*m*phi)';
-    % skladowa azymutalna
-    har(:,:,2) = alpha' .* Tau(n, m, theta);
+    har(:,:,1) = l * (l + 1) * h(l, kr) / kr * P(abs(m)+1, :) .* exp(1j*m*phi)';
     % skladowa zenitalna
-    har(:,:,3) = 1j * alpha' .* Pi(n, m, theta);
+    har(:,:,2) = alpha' .* Tau(l, m, theta);
+    % skladowa azymutalna
+    har(:,:,3) = 1j * alpha' .* Pi(l, m, theta);
 else
     error('Zly typ funkcji')
 end
 end
 
-function x = Pi(n, m, theta)
-global lgr
-P = lgr * legendre(n, cos(theta));
+function x = Pi(l, m, theta)
+% funkcja Pi
+P = legendre(l, cos(theta));
 x = m ./ sin(theta) .* P(abs(m)+1, :);
 end
 
-function y = Tau(n, m, theta)
-global lgr
+function y = Tau(l, m, theta)
+% funkcja Tau
 x = cos(theta);
 % wielomiany
-P = lgr * legendre(n, x);
-P1 = lgr * legendre(n+1, x);
+P = legendre(l, x);
+P1 = legendre(l+1, x);
 % czesciowe wyrazenie na pochodna
-dP = (n - m + 1) * P1(abs(m)+1, :) - (n + 1) * x .* P(abs(m)+1, :);
+dP = (l - m + 1) * P1(abs(m)+1, :) - (l + 1) * x .* P(abs(m)+1, :);
 % wynik
 y = - sin(theta) .* dP ./ (x.^2 - 1);
 end
@@ -99,13 +97,13 @@ end
 % end
 % end
 
-function h = sphhankel(n, z)
+function h = sphhankel(l, kr)
 % sferyczna funkcja Hankela pierwszego rodzaju
-h = sqrt(pi ./ (2*z)) .* besselh(n+1/2, 1, z);
+h = sqrt(pi ./ (2*kr)) .* besselh(l+1/2, 1, kr);
 % h = sphbessel(1, n, z) + 1j * sphbessel(2, n, z);
 end
 
-function dh = sphhankelderivative(n, z)
-% pochodna sferycznej funkcji Hankela pierwszego rodzaju
-dh = n ./ z .* sphhankel(n, z) - sphhankel(n+1, z);
-end
+% function dh = sphhankelderivative(n, kr)
+% % pochodna sferycznej funkcji Hankela pierwszego rodzaju
+% dh = n ./ kr .* sphhankel(n, kr) - sphhankel(n+1, kr);
+% end
