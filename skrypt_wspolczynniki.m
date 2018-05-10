@@ -24,22 +24,11 @@
 
 %% obliczamy pole dla calego przekroju dlugosci fali
 % filename = 'C:\Users\Monika\Documents\MATLAB\analiza_multipolowa\krzem_n.txt';
-[E, R, eneis, n, theta, phi] = field_sphere_si(50, 50);
-the_end() % funkcja daje sygnal, ze obliczenia sie skonczyly
-
-%% zmiana wspolrzednych E z kartezjanskich na sferyczne
-Esph = 0 * E;
-for i = 1 : size(E,3)
-    % r
-    Esph(:,1,i) = sqrt(E(:,1,i).^2 + E(:,2,i).^2 + E(:,3,i).^2);
-    % theta
-    Esph(:,2,i) = atan(E(:,2,i) ./ E(:,1,i));
-    % phi
-    Esph(:,3,i) = acos(E(:,3,i) ./ Esph(:,1,i));
-end
+[E, R, eneis, N, theta, phi] = field_sphere_si(50, 50);
+% the_end() % funkcja daje sygnal, ze obliczenia sie skonczyly
 
 %% obliczamy wspolczynniki rozproszenia
-C = coefforeverywavelength(Esph, R, eneis, n, theta, phi);
+C = coefforeverywavelength(E, R, eneis, N, theta, phi);
 
 %% wykres
 plot(eneis, C)
