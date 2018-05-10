@@ -1,21 +1,21 @@
-function f = sphreshapefield(e, theta_n, phi_n)
+function f = sphreshapefield(e, n_theta, n_phi)
 % Zmienia wymiary pola wektora na takie, aby byly
 % zgodne z wymiarami VSH.
 % 
-%   SPHRESHAPEFIELD(e, theta_n, phi_n)
+%   SPHRESHAPEFIELD(e, n_theta, n_phi)
 % 
-%   e - pole wektorowe o wymiarze (:,3)
-%   theta_n - dlugosc wektora z katami theta
-%   phi_n - dlugosc wektora z katami phi
+%   e - pole wektorowe o wymiarze (:,3), [r, theta, phi]
+%   n_theta - dlugosc wektora z katami theta
+%   n_phi - dlugosc wektora z katami phi
 % 
-%   Zwraca pole jako tablice o wymiarach (phi_n x theta_n x 3), 
+%   Zwraca pole jako tablice o wymiarach (n_phi x n_theta x 3), 
 %   gdzie:
 %   - pierwszy wymiar odpowiada wartosciom dla kolejnych katow phi
 %   - drugi wymiar odpowiada wartosciom dla kolejnych katow theta
-%   - trzeci wymiar to kolejno wpolrzedne sferyczne r, az, el
+%   - trzeci wymiar to kolejno wpolrzedne sferyczne r, el, az
 
-f = zeros(phi_n, theta_n, 3);
-f(:,:,1) = reshape(e(:,1), phi_n, theta_n);
-f(:,:,2) = reshape(e(:,2), phi_n, theta_n);
-f(:,:,3) = reshape(e(:,3), phi_n, theta_n);
+f = zeros(n_phi, n_theta, 3);
+f(:,:,1) = reshape(e(:,1), n_phi, n_theta);
+f(:,:,2) = reshape(e(:,2), n_phi, n_theta);
+f(:,:,3) = reshape(e(:,3), n_phi, n_theta);
 end
