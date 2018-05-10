@@ -1,30 +1,30 @@
-function [x, y, z, az, el, r, theta, phi] = sferawspl(R, az_n, el_n)
+function [x, y, z, az, el, rad, theta, phi] = sferawspl(R, n_theta, n_phi)
 % Tworzy sferę o zadanym promieniu i zwraca jej wspolrzedne
 % w ukladzie kartezjanskim i sferycznym.
 % 
-%   [x, y, z, az, el, r, theta, phi] = SFERAWSPL(R, az_n, el_n)
+%   [x, y, z, az, el, rad, theta, phi] = SFERAWSPL(R, n_az, n_el)
 % 
 %   R - promien sfery
-%   az_n - liczba punktow na jakie dzieli sie kat azymutalny
-%   el_n - liczba punktow na jakie dzieli sie kat zenitalny
+%   n_theta - liczba punktow na jakie dzieli sie kat zenitalny
+%   n_phi - liczba punktow na jakie dzieli sie kat azymutalny
 % 
 %   x, y, z - wspolrzedne kartezjanskie
-%   az, el, r - wspolrzedne sferyczne
+%   az, el, rad - wspolrzedne sferyczne
 %   theta, phi - katy sferyczne
 
-% wiersze - phi - el
-% kolumny - theta - az
+% wiersze - phi - az
+% kolumny - theta - el
 
-%% wspolrzedne azymutalne
-theta = linspace(1e-4, 2*pi-1e-4, az_n);
-az = theta .* ones(el_n, az_n);
+%% wspolrzedne zanitalne
+theta = linspace(1e-4, 2*pi-1e-4, n_theta);
+az = theta .* ones(n_phi, n_theta);
 az = az(:);
-% wspolrzedne zenitalne
-phi = linspace(-pi/2, pi/2, el_n);
-el = phi' .* ones(el_n, az_n);
+% wspolrzedne azymutalne
+phi = linspace(-pi/2, pi/2, n_phi);
+el = phi' .* ones(n_phi, n_theta);
 el = el(:);
 % wspolrzedne promienia
-r = ones(az_n * el_n, 1) * R;
+rad = ones(n_phi * n_theta, 1) * R;
 % przechodzimy do wspolrzednych kartezjanskich
-[x, y, z] = sph2cart(az, el, r);
+[x, y, z] = sph2cart(az, el, rad);
 end
