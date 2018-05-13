@@ -58,6 +58,6 @@ function e = calculatefield(enei)
 % Zwraca pole we współrzędnych kartezjanskich
 global op p bem exc x y z
 sig = bem \ exc( p, enei );
-emesh = meshfield( p, x, y, z, op, 'mindist', 1, 'nmax', 5000 , 'waitbar', 0);
+emesh = meshfield( p, x, y, z, op, 'mindist', 1, 'nmax', 1000 , 'waitbar', 0);
 e = emesh( sig ) ; 
 end

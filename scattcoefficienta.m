@@ -9,13 +9,12 @@ function a = scattcoefficienta(l, k, e, R, theta, phi)
 %   R - promien sfery
 %   phi - katy zenitalne
 %   theta - katy azymutalne
-% 
+
 a = 0;
 for m = -l : 1 : l
     alm = a_lm(l, m, k, e, R, theta, phi);
     a = a + k^2 * l * (l + 1) * (alm * conj(alm));
 end
-
 end
 
 function alm = a_lm(l, m, k, e, R, theta, phi)
