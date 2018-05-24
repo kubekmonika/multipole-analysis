@@ -33,7 +33,7 @@ E = sphreshapefield(e, length(theta), length(phi));
 N(isnan(N)) = 0;
 E(isnan(E)) = 0;
 % licznik
-licznik = dot(E, conj(N), 3) .* sin(theta);
-mianownik = dot(N, conj(N), 3) .* sin(theta);
+licznik = dot(N, E, 3) .* sin(theta);
+mianownik = dot(N, N, 3) .* sin(theta);
 alm = sum(licznik(:)) / sum(mianownik(:));
 end
