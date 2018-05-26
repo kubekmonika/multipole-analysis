@@ -1,4 +1,4 @@
-function C = coefforeverywavelength(E, R, eneis, N, theta, phi)
+function [C_a, C_b] = coefforeverywavelength(E, R, eneis, N, theta, phi)
 %Funkcja liczaca wspolczynniki rozproszenia dla danego pola.
 
 % funkcja liczaca wektor falowy: k^2 = 4 pi^2 n^2 / lambda^2
@@ -11,13 +11,15 @@ wavevector = @(n, enei) 2 * pi * n / (enei * 0.1^9);     % KS: dopisałam mnoże
 
 % obliczamy wspolczynniki rozproszenia
 n_N = length(N);
-C = zeros(1, n_N);
+C_a = zeros(1, n_N);
+C_b = zeros(1, n_N);
 
 % petla for / parfor
 for i = 1: n_N
     k = wavevector(N(i), eneis(i));
     e = E(:,:,i);
-    C(i) = scattcoefficienta(1, k, e, R, theta, phi);
+    C_a(i) = scattcoefficienta(1, k, e, R, theta, phi);
+    C_b(i) = scattcoefficientb(1, k, e, R, theta, phi);
 end
 
 end

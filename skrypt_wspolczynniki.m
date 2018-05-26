@@ -14,11 +14,12 @@
 % the_end() % funkcja daje sygnal, ze obliczenia sie skonczyly
 
 %% obliczamy wspolczynniki rozproszenia
-C = coefforeverywavelength(E, R, eneis, N, theta, phi);
+[C_a, C_b] = coefforeverywavelength(E, R, eneis, N, theta, phi);
 
 %% wykres
 figure
-plot(eneis, abs(C))
+% plot(eneis, abs(C_a))
+plot(eneis, abs(C_b))
 
 %% SPRAWDZAMY VSH
 
@@ -133,6 +134,59 @@ for m = [-1, 0, 1]
 %     plot(eneis, abs(dot(squeeze(E(100,:,:)), squeeze(vshN(100,:,:)))))
 end
 hold off
+
+%%
+e = E(:,:,1);
+wavevector = @(n, enei) 2 * pi * n / (enei * 0.1^9); 
+k = wavevector(1,eneis(1));
+l = 1;
+m = 1;
+
+vshN_m0 = vsh('N', l, 0, theta, phi, R, k);
+vshN_m1 = vsh('N', l, 1, theta, phi, R, k);
+vshN_m2 = (-1)^abs(-1) * conj(vsh('N', l, abs(-1), theta, phi, R, k));
+
+e_resh = sphreshapefield(e, length(theta), length(phi));
+c = scattcoefficienta(1, k, e, R, theta, phi);
+
+%%
+prodNE = dot(vshN_m1, e_resh, 3);
+hold on
+subplot(2,1,1);
+contourf(real(prodNE))
+subplot(2,1,2);
+contourf(real(prodNE .* sin(theta)))
+hold off
+
+%%
+prodNN = dot(vshN_m2, vshN_m2, 3);
+hold on
+subplot(2,1,1);
+contourf(prodNN)
+subplot(2,1,2);
+contourf(prodNN .* sin(theta))
+hold off
+
+%%
+i = 11;
+k = wavevector(1, eneis(i));
+disp([a_lm(1, -1, k, E(:,:,i), R, theta, phi), ...
+    a_lm(1, 0, k, E(:,:,i), R, theta, phi),...
+    a_lm(1, 1, k, E(:,:,i), R, theta, phi)])
+
+%%
+% ls = linspace(0, 1, 100);
+ls = linspace(min(R*K), max(R*K), 1000);
+f = @real;
+figure
+hold on
+% plot(ls, f(besselh(1, ls)));
+plot(ls, f(besselh(3/2, ls)));
+% plot(ls, f(besselh(2, ls)));
+hold off
+%%
+plot(theta, Pi(1, -1, theta))
+
 %%
 figure;
 hold on

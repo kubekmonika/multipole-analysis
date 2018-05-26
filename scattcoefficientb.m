@@ -1,5 +1,5 @@
-function a = scattcoefficienta(l, k, e, R, theta, phi)
-%Oblicza wspolczynnik rozproszenia a(l).
+function b = scattcoefficientb(l, k, e, R, theta, phi)
+%Oblicza wspolczynnik rozproszenia b(l).
 %
 %   SCATTCOEFFICIENTA(l, m, E, R, theta, phi)
 % 
@@ -10,30 +10,30 @@ function a = scattcoefficienta(l, k, e, R, theta, phi)
 %   phi - katy zenitalne
 %   theta - katy azymutalne
 
-a = 0;
+b = 0;
 for m = -l : 1 : l
-    alm = a_lm(l, m, k, e, R, theta, phi);
-    a = a + k^2 * l * (l + 1) * (alm * conj(alm));
+    blm = b_lm(l, m, k, e, R, theta, phi);
+    b = b + k^2 * l * (l + 1) * (blm * conj(blm));
 end
 end
 
-function alm = a_lm(l, m, k, e, R, theta, phi)
+function blm = b_lm(l, m, k, e, R, theta, phi)
 % Zwraca wartosc wspolczynnika rozproszenia a_lm
 assert(l >= abs(m), 'Blad: |m| > l')
 % VSH
 % N = vsh('N', n, m, theta, phi, R, k);
 if m >= 0
-    N = vsh('N', l, m, theta, phi, R, k);
+    M = vsh('M', l, m, theta, phi, R, k);
 else
-    N = (-1)^abs(m) * conj(vsh('N', l, abs(m), theta, phi, R, k));
+    M = (-1)^abs(m) * conj(vsh('M', l, abs(m), theta, phi, R, k));
 end
 % przeksztalcamy pole
 E = sphreshapefield(e, length(theta), length(phi));
 % zastepujemy NaN wartoscia 0
-N(isnan(N)) = 0;
+M(isnan(M)) = 0;
 E(isnan(E)) = 0;
 % licznik
-licznik = 1;%dot(N, E, 3) .* sin(theta);
-mianownik = dot(N, N, 3) .* sin(theta);
-alm = sum(licznik(:)) / sum(mianownik(:));
+licznik = dot(M, E, 3) .* sin(theta);
+mianownik = dot(M, M, 3);% .* sin(theta);
+blm = sum(licznik(:)) / sum(mianownik(:));
 end
