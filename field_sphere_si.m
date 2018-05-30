@@ -1,4 +1,4 @@
-function [Esph, R, eneis, N, theta, phi] = field_sphere_si(n_theta, n_phi)
+function [E, R, eneis, N, theta, phi] = field_sphere_si(n_theta, n_phi)
 % Oblicza pole we wspolrzednych sferycznych dla krzemowej sfery 
 % o srednicy 200nm, kolejno dla roznych dlugosci fali padajacej.
 % 
@@ -9,7 +9,7 @@ function [Esph, R, eneis, N, theta, phi] = field_sphere_si(n_theta, n_phi)
 
 % Definiujemy parametry dla osrodka w ktorym znajduje sie sfera.
 % dlugosci fali
-eneis = linspace(450, 950, 100);  
+eneis = linspace(450, 850, 80);  
 % relacja dyspersyjna, ogólniej n może być liczbą, 
 % ale dla ośrodków z absorpcją lub nieizotropowych metoda nie działa
 N = ones(1, length(eneis));  % wspolczynnik zalamania
@@ -22,7 +22,7 @@ epstab = { epsconst( 1 ), epstable( 'silicon2.dat' ) };
 p = trisphere( 144, 200 );
 p = comparticle( epstab, { p }, [ 2, 1 ], 1, op );
 % promien otaczajcej sfery
-R = 110;
+R = 105;
 % solver
 bem = bemsolver( p, op );
 %kierunek fali
@@ -41,16 +41,6 @@ for i = 1 : n_eneis
 end
 multiWaitbar('Obliczanie pola', 'Close');
 
-% zmiana wspolrzednych E z kartezjanskich na sferyczne
-Esph = 0 * E;
-for i = 1 : size(E,3)
-    % r
-    Esph(:,1,i) = sqrt(E(:,1,i).^2 + E(:,2,i).^2 + E(:,3,i).^2);
-    % theta
-    Esph(:,2,i) = acos(E(:,3,i) ./ Esph(:,1,i));
-    % phi
-    Esph(:,3,i) = atan(E(:,2,i) ./ E(:,1,i));
-end
 end
 
 function e = calculatefield(enei)
