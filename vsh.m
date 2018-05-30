@@ -19,7 +19,9 @@ function har = vsh(kind, l, m, theta, phi, r, k)
 % kolumny - theta
 
 h = @sphhankel;
-
+if l ~= 1
+    error('Error: l is not equal to 1')
+end
 if m > l
     error('Blad: m > l')
 end
@@ -72,20 +74,35 @@ end
 
 function x = Pi(l, m, theta)
 % funkcja Pi
-P = legendre(l, cos(theta));
-x = m ./ sin(theta) .* P(abs(m)+1, :);
+if m == 1
+    if l == 0
+        x = 0 * theta;
+    elseif l == 1
+        x = theta ./ theta;
+    else
+        x = (2*l - 1) * cos(theta) .* lambda(l-1, m, theta) / (l - 1)...
+            - l * lambda(l-2, m, theta) / (l - 1);
+    end
+else
+    P = legendre(l, cos(theta));
+    x = m ./ sin(theta) .* P(abs(m)+1, :); % dziwny skok wartosci
+end
 end
 
 function y = Tau(l, m, theta)
 % funkcja Tau
-x = cos(theta);
-% wielomiany
-P = legendre(l, x);
-P1 = legendre(l+1, x);
-% czesciowe wyrazenie na pochodna
-dP = (l - m + 1) * P1(abs(m)+1, :) - (l + 1) * x .* P(abs(m)+1, :);
-% wynik
-y = - sin(theta) .* dP ./ (x.^2 - 1);
+if m == 1
+    y = l * cos(theta) .* Pi(l, m, theta) - (l + 1) * Pi(l-1, m, theta);
+else
+    x = cos(theta);
+    % wielomiany
+    P = legendre(l, x);
+    P1 = legendre(l+1, x);
+    % czesciowe wyrazenie na pochodna
+    dP = (l - m + 1) * P1(abs(m)+1, :) - (l + 1) * x .* P(abs(m)+1, :);
+    % wynik
+    y = - sin(theta) .* dP ./ (x.^2 - 1);
+end
 end
 
 % function j = sphbessel(kind, n, z)
@@ -99,11 +116,14 @@ end
 
 function h = sphhankel(l, kr)
 % sferyczna funkcja Hankela pierwszego rodzaju
-h = sqrt(pi ./ (2*kr)) .* besselh(l+1/2, 1, kr);
-% h = sphbessel(1, n, z) + 1j * sphbessel(2, n, z);
-end
 
+if 100 * l^2 < kr
+    % przybliczenie dla kr >> l^2
+    h = (-1j)^l * exp(1j*kr) / (1j * kr);
+else
+    h = sqrt(pi ./ (2*kr)) .* besselh(l+1/2, 1, kr);
+end
 % function dh = sphhankelderivative(n, kr)
 % % pochodna sferycznej funkcji Hankela pierwszego rodzaju
 % dh = n ./ kr .* sphhankel(n, kr) - sphhankel(n+1, kr);
-% end
+end
