@@ -1,4 +1,4 @@
-function b = scattcoefficientb(l, k, e, R, theta, phi)
+function [b, B] = scattcoefficientb(l, k, e, R, theta, phi)
 %Oblicza wspolczynnik rozproszenia b(l).
 %
 %   SCATTCOEFFICIENTA(l, m, E, R, theta, phi)
@@ -11,8 +11,10 @@ function b = scattcoefficientb(l, k, e, R, theta, phi)
 %   theta - katy azymutalne
 
 b = 0;
+B = ones(1,3);
 for m = -l : 1 : l
     blm = b_lm(l, m, k, e, R, theta, phi);
+    B(m+2) = blm;
     b = b + k^2 * l * (l + 1) * (blm * conj(blm));
 end
 end

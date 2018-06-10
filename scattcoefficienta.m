@@ -1,4 +1,4 @@
-function a = scattcoefficienta(l, k, e, r, theta, phi)
+function [a, A] = scattcoefficienta(l, k, e, r, theta, phi)
 %Oblicza wspolczynnik rozproszenia a(l).
 %
 %   SCATTCOEFFICIENTA(l, m, E, R, theta, phi)
@@ -11,8 +11,10 @@ function a = scattcoefficienta(l, k, e, r, theta, phi)
 %   theta - katy azymutalne
 
 a = 0;
+A = ones(1, 3);
 for m = -l : 1 : l
     alm = a_lm(l, m, k, e, r, theta, phi);
+    A(m+2) = alm;
     a = a + k^2 * l * (l + 1) * (alm * conj(alm));
 end
 end

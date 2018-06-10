@@ -30,9 +30,10 @@ function [x, y, z, az, el, rad, theta, phi] = sferawspl(R, n_theta, n_phi)
 % % przechodzimy do wspolrzednych kartezjanskich
 % [x, y, z] = sph2cart(az, el, rad);
 
-%% wspolrzedne zanitalne
-theta = linspace(0, pi, n_theta + 1); 
-theta = theta(1: n_theta);
+%% 
+% wspolrzedne zanitalne
+% theta = linspace(0, pi, n_theta + 1); 
+theta = linspace(-pi/2, pi/2, n_theta); 
 el = theta .* ones(n_phi, n_theta);
 el = el(:);
 % wspolrzedne azymutalne
@@ -43,5 +44,5 @@ az = az(:);
 % wspolrzedne promienia
 rad = ones(n_phi * n_theta, 1) * R;
 % przechodzimy do wspolrzednych kartezjanskich
-[x, y, z] = sph2cart(az, pi/2 - el, rad);
+[x, y, z] = sph2cart(az, el, rad);
 end
