@@ -12,9 +12,9 @@ end
 
 function M = vsh(m, theta, phi)
 % Liczy składowe VSH_M
-M = zeros(length(phi), length(theta), 3);
-M(:,:,2) = 1j * exp(1j * m * phi') .* Pi(m, theta);
-M(:,:,3) = exp(1j * m * phi') .* Tau(m, theta);
+M = zeros(length(phi), 3);
+M(:,2) = 1j * exp(1j * m * phi) .* Pi(m, theta);
+M(:,3) = exp(1j * m * phi) .* Tau(m, theta);
 
 % if m == 0
 %     M(:,:,3) = - ones(length(phi), 1) .* sin(theta) * exp(1j * z) ...
@@ -30,9 +30,9 @@ function p = Pi(m, theta)
 % Liczy funkcje Pi 
 assert(m>=0, 'Error: m < 0 w funkcji Pi')
 if m == 0
-    p = zeros(1, length(theta));
+    p = zeros(length(theta), 1);
 elseif m == 1
-    p = ones(1, length(theta));
+    p = ones(length(theta), 1);
 else
     assert(false, 'Error: m > 1 w funkcji Pi')
 end

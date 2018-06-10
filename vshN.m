@@ -18,11 +18,11 @@ end
 function N = vsh(m, theta, phi, z)
 % Liczy VSH_N
 global h dh
-N = zeros(length(phi), length(theta), 3);
-alpha = exp(1j * m * phi') * (h / z + dh);
-N(:,:,1) = 2 * exp(1j * m * phi') .* P(m, theta) * h / z;
-N(:,:,2) = alpha .* Tau(m, theta);
-N(:,:,3) = 1j * alpha .* Pi(m, theta);
+N = zeros(length(phi), 3);
+alpha = exp(1j * m * phi) * (h / z + dh);
+N(:,1) = 2 * exp(1j * m * phi) .* P(m, theta) * h / z;
+N(:,2) = alpha .* Tau(m, theta);
+N(:,3) = 1j * alpha .* Pi(m, theta);
 
 % if m == 0
 %     alpha = ones(length(phi), 1) * exp(1j * z) / (z^3);
@@ -39,9 +39,9 @@ function p = Pi(m, theta)
 % Liczy funkcje Pi 
 assert(m>=0, 'Error: m < 0 w funkcji Pi')
 if m == 0
-    p = zeros(1, length(theta));
+    p = zeros(length(theta), 1);
 elseif m == 1
-    p = ones(1, length(theta));
+    p = ones(length(theta), 1);
 else
     assert(false, 'Error: m > 1 w funkcji Pi')
 end
