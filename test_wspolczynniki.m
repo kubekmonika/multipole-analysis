@@ -1,16 +1,11 @@
-%% Skyrpt w ktorym obliczamy wspolczynniki rozproszenia.
+%% Skrypt w ktorym obliczamy wspolczynniki rozproszenia.
 
-%% Najpierw potrzebujemy dane ze skryptu pole_sfera.m
+%% Dane
 % R - promien sfery
 % enei - dlugosc fali
 % e - pole
 % theta, phi - katy sferyczne
 % az, el - wspolrzedne sferyczne
-
-%% obliczamy pole dla calego przekroju dlugosci fali
-[Ekart, R, eneis, N, theta, phi] = field_sphere_si(41, 21);
-r = R * 1e-9;
-% theta = theta - pi/2;
 
 %% zmiana wspolrzednych E z kartezjanskich na sferyczne
 E = 0 * Ekart;
@@ -23,40 +18,6 @@ for i = 1 : size(Ekart,3)
     E(:,3,i) = atan(Ekart(:,2,i) ./ Ekart(:,1,i));
 end
 % the_end() % funkcja daje sygnal, ze obliczenia sie skonczyly
-%%
-EE = zeros(length(phi), length(theta), 3, length(eneis));
-for j = 1 : length(eneis)
-    EE(:,:,:,j) = sphreshapefield(E(:,:,j), length(theta), length(phi));
-end
-dotE = zeros(1, length(eneis));
-for i = 1 : length(eneis)
-    temp = squeeze(EE(:,:,:,i));
-    temp = dot(temp, temp, 3) .* sin(theta);
-    dotE(i) = sum(temp(:));% / K(i)^2;
-end
-
-% dotEkart = dotE;
-%% obliczamy wspolczynniki rozproszenia
-[C_a, C_b] = coefforeverywavelength(E, r, eneis, N, theta, phi);
-
-%% wykres
-od = 5;
-
-figure
-hold on
-subplot(2,1,1)
-yyaxis left
-plot(eneis(od:end), C_a(od:end), '-')
-yyaxis right
-plot(eneis(od:end), C_b(od:end), '--')
-legend('a1', 'b1')
-
-subplot(2,1,2)
-yyaxis left
-plot(eneis(od:end), C_a(od:end) + C_b(od:end), '--')
-yyaxis right
-plot(eneis(od:end), dotE(od:end), '-', 'LineWidth', 2)
-legend('suma', 'dot(E,E)')
 
 %%
 figure
@@ -76,19 +37,7 @@ plot(eneis, C_b, 'b-')
 
 legend('a1', 'b1')
 
-%%
-cart2sphvec = @(az, el) [-sin(az),          cos(az),         0;...
-                         -sin(el)*cos(az), -sin(el)*sin(az), cos(el);...
-                          cos(el)*cos(az),  cos(el)*sin(az), sin(el)];
 
-[~, ~, ~, az, el, ~, ~, ~] = sferawspl(R, length(theta), length(phi));
-
-E = 0 * Ekart;
-for i = 1 : size(E, 3)
-    for j = 1 : size(E,1)
-        E(j,:,i) = cart2sphvec(az(j), el(j)) * Ekart(j,:,i)';
-    end
-end
 %%
 X = sphreshapefield(Ekart(:,:,30), length(theta), length(phi));
 dotX = dot(X,X,3);

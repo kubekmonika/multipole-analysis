@@ -1,4 +1,4 @@
-%sprawdzamy nowe harmoniki sferyczne
+%%sprawdzamy nowe harmoniki sferyczne
 wavevector = @(n, enei) 2 * pi * n / ((enei) * 1e-9);
 %%
 [x, y, z, az, el, rad, theta, phi] = sferawspl(205, 51, 41);
@@ -267,3 +267,39 @@ for i = -1:1:1
         disp({i, j, sum(dotXsin(:))})
     end
 end
+
+%%
+wavevector = @(n, enei) 2 * pi * n / ((enei) * 1e-9);
+K = eneis * 0;
+for i = 1 : length(eneis)
+    K(i) = wavevector(1, eneis(i));
+end
+%%
+i = 1;
+k = K(i);
+e = E(:,:,i);
+[a, A] = scattcoefficienta(1, k, e, r, theta, phi);
+[b, B] = scattcoefficientb(1, k, e, r, theta, phi);
+
+%%
+[A(3) - A(1); 1j * (A(1) + A(3)); -sqrt(2) * A(2)]
+
+%    0.0017 + 0.3107i  -0.0016 + 0.0013i   0.4333 - 0.2123i
+
+%%
+figure;
+hold on
+[x, y, z, ~,~,~, ~, ~] = sferawspl(R, length(theta), length(phi));
+N1 = vshN(-1, theta, phi, r, k);
+N2 = vshN(0, theta, phi, r, k);
+N3 = vshN(1, theta, phi, r, k);
+N_ = N3 - N1;
+N_x = reshape(N_(:,:,1),[],1);
+N_y = reshape(N_(:,:,2),[],1);
+N_z = reshape(N_(:,:,3),[],1);
+% quiver3(x, y, z, e(:,1), e(:,2), e(:,3))
+quiver3(x, y, z, N_x, N_y, N_z)
+
+xlabel( 'x (nm)' );
+ylabel( 'y (nm)' );
+zlabel( 'z (nm)' );
