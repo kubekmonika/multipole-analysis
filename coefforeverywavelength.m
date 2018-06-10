@@ -21,5 +21,4 @@ for i = 1: n_N
     C_a(i) = scattcoefficienta(1, k, e, r, theta, phi);
     C_b(i) = scattcoefficientb(1, k, e, r, theta, phi);
 end
-
 end
