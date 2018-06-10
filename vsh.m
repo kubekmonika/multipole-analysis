@@ -1,4 +1,4 @@
-function [M, N] = vsh(m, theta, phi, r, k)
+function [V1, V2] = vsh(m, theta, phi, r, k, type)
 % Liczy wektorowe harmoniki sferyczne (VSH) pierwszego stopnia
 % na sferze o promieniu r i w punktach o wpółrzędnych określonych 
 % przez kąty theta i phi.
@@ -10,22 +10,47 @@ function [M, N] = vsh(m, theta, phi, r, k)
 %   phi - współrzędne azymutalne, 0 <= phi <= 2pi
 %   r - promień sfery
 %   k - wartość wektora falowego
+%   (opcjonalnie) type - typ harmoniki: 'M' lub 'N'
+% 
+% Jeżeli typ nie jest określony to zwraca obie VSH w kolejności: [M, N].
 
 z = k * r;
 global h dh
 if m >= 0
     h = Hankel(z);
     dh = Hankel(z, true);
-    M = vshM(m, theta, phi) * h;
-    N = vshN(m, theta, phi, z);
+    if nargin == 5
+        V1 = vshM(m, theta, phi) * h;
+        V2 = vshN(m, theta, phi, z);
+    elseif type == 'M'
+        V1 = vshM(m, theta, phi) * h;
+        V2 = 0;
+    elseif type == 'N'
+        V2 = 0;
+        V1 = vshN(m, theta, phi, z);
+    else
+        assert(false, 'Zły typ harmoniki')
+    end
 else
     m = abs(m);
     h = conj(Hankel(z));
     dh = conj(Hankel(z, true));
-    M = (-1)^m * factorial(1-m) / factorial(1+m) * conj(h) *...
-        vshM(m, theta, phi);
-    N = (-1)^m * factorial(1-m) / factorial(1+m) * ...
-        vshN(m, theta, phi, z);
+    if nargin == 5
+        V1 = (-1)^m * factorial(1-m) / factorial(1+m) * conj(h) *...
+            vshM(m, theta, phi);
+        V2 = (-1)^m * factorial(1-m) / factorial(1+m) * ...
+            vshN(m, theta, phi, z);
+    elseif type == 'M'
+        V1 = (-1)^m * factorial(1-m) / factorial(1+m) * conj(h) *...
+            vshM(m, theta, phi);
+        V2 = 0;
+    elseif type == 'N'
+        V2 = 0;
+        V1 = (-1)^m * factorial(1-m) / factorial(1+m) * ...
+            vshN(m, theta, phi, z);
+    else
+        assert(false, 'Zły typ harmoniki')
+    end
 end
 end
 
