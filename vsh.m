@@ -24,9 +24,9 @@ if m >= 0
         V2 = vshN(m, theta, phi, z);
     elseif type == 'M'
         V1 = vshM(m, theta, phi) * h;
-        V2 = 0;
+        V2 = nan;
     elseif type == 'N'
-        V2 = 0;
+        V2 = nan;
         V1 = vshN(m, theta, phi, z);
     else
         assert(false, 'Zły typ harmoniki')
