@@ -1,4 +1,4 @@
-function [E, R, eneis, N, theta, phi] = field_sphere_si(n_theta, n_phi)
+function [E, R, eneis, N, theta, phi] = field_sphere_si(n_theta, n_phi, dir, pol)
 % Oblicza pole we wspolrzednych sferycznych dla krzemowej sfery 
 % o srednicy 200nm, kolejno dla roznych dlugosci fali padajacej.
 % 
@@ -14,6 +14,11 @@ eneis = linspace(450, 850, 80);
 % ale dla ośrodków z absorpcją lub nieizotropowych metoda nie działa
 N = ones(1, length(eneis));  % wspolczynnik zalamania
 
+% % kierunek fali
+% dir = [ 0, 0, 1 ];
+% % polaryzacja fali
+% pol = [ 0, 1, 0 ];
+
 % TWORZYMY OBIEKTY
 global op p bem exc x y z
 op = bemoptions( 'sim', 'ret', 'interp', 'curv', 'refine', 2 );
@@ -26,7 +31,7 @@ R = 105;
 % solver
 bem = bemsolver( p, op );
 %kierunek fali
-exc = planewave( [ 1, 0, 0 ], [ 0, 0, 1 ], op );
+exc = planewave( dir, pol, op );
 % wspolrzedne w ktorych liczymy pole
 [x, y, z, ~, ~, ~, theta, phi] = sferawspl(R, n_theta, n_phi);
 % macierz wynikowa
@@ -48,6 +53,6 @@ function e = calculatefield(enei)
 % Zwraca pole we współrzędnych kartezjanskich
 global op p bem exc x y z
 sig = bem \ exc( p, enei );
-emesh = meshfield( p, x, y, z, op, 'mindist', 1, 'nmax', 1000 , 'waitbar', 0);
+emesh = meshfield( p, x, y, z, op, 'mindist', 1, 'nmax', 1200 , 'waitbar', 0);
 e = emesh( sig ) ; 
 end
