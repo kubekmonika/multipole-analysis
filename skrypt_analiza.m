@@ -10,66 +10,49 @@
 %% obliczamy pole dla calego przekroju dlugosci fali
 dir = [0, 0, 1];
 pol = [1, 0, 0];
-[Ekart, R, eneis, N, theta, phi] = field_sphere_si(51, 41, dir, pol);
-r = R * 1e-9;
-theta = theta + pi/2;
-save('41x31_zx.mat', 'Ekart', 'R', 'r', 'eneis', 'N', 'theta', 'phi');
-clear all
+[Ekart, R, eneis, N, x, y, z] = field_sphere_si(60, dir, pol);
 
-dir = [0, 0, 1];
-pol = [0, 1, 0];
-[Ekart, R, eneis, N, theta, phi] = field_sphere_si(51, 41, dir, pol);
+%% obliczamy wspolrzedne
 r = R * 1e-9;
-theta = theta + pi/2;
-save('41x31_zy.mat', 'Ekart', 'R', 'r', 'eneis', 'N', 'theta', 'phi');
+[phi, theta] = cart2sph(x,y,z);
+theta = pi/2 - theta;
 
 %%
-cart2sphvec = @(az, el) [-sin(az),          cos(az),         0;...
-                         -sin(el)*cos(az), -sin(el)*sin(az), cos(el);...
-                          cos(el)*cos(az),  cos(el)*sin(az), sin(el)];
-
-[~, ~, ~, az, el, ~, ~, ~] = sferawspl(R, length(theta), length(phi));
+% na podstawie: https://www.mathworks.com/help/phased/ref/cart2sphvec.html
+cart2sphvec = @(phi, theta) [-sin(phi),          cos(phi),         0;...
+                         -sin(theta)*cos(phi), -sin(theta)*sin(phi), cos(theta);...
+                          cos(theta)*cos(phi),  cos(theta)*sin(phi), sin(theta)];
 
 E = 0 * Ekart;
 for i = 1 : size(E, 3)
     for j = 1 : size(E,1)
-        E(j,:,i) = cart2sphvec(az(j), el(j)) * Ekart(j,:,i)';
+        E(j,:,i) = cart2sphvec(phi(j), theta(j)) * Ekart(j,:,i)';
     end
 end
 
 %%
-EE = zeros(length(phi), length(theta), 3, length(eneis));
-for j = 1 : length(eneis)
-    EE(:,:,:,j) = sphreshapefield(E(:,:,j), length(theta), length(phi));
-end
-dotE = zeros(1, length(eneis));
-for i = 1 : length(eneis)
-    temp = squeeze(EE(:,:,:,i));
-    temp = dot(temp, temp, 3) .* sin(theta);
-    dotE(i) = sum(temp(:));% / K(i)^2;
-end
+dotEkart = squeeze( sum( squeeze( dot(Ekart, Ekart, 2) ) .* theta, 1) );
+dotE = squeeze( sum( squeeze( dot(E, E, 2) ) .* theta, 1 ) );
 
-% dotEkart = dotE;
 %% obliczamy wspolczynniki rozproszenia
-[C_a, C_b] = coefforeverywavelength(E, r, eneis, N, theta, phi);
+% N = 1;
+[C_a, C_b] = coefforeverywavelength(E, r, eneis, N, theta, phi, 'ab');
 
 %% wykres
-od = 1;
-
 figure
 hold on
 subplot(2,1,1)
 yyaxis left
-plot(eneis(od:end), C_a(od:end), '-')
+plot(eneis, C_a, '-')
 yyaxis right
-plot(eneis(od:end), C_b(od:end), '--')
+plot(eneis, C_b, '--')
 legend('a1', 'b1')
 
 subplot(2,1,2)
 yyaxis left
-plot(eneis(od:end), C_a(od:end) + C_b(od:end), '--')
+plot(eneis, C_a + C_b, '--')
 yyaxis right
-plot(eneis(od:end), dotE(od:end), '-', 'LineWidth', 2)
+plot(eneis, dotE, '-', 'LineWidth', 2)
 legend('suma', 'dot(E,E)')
 
 %%
