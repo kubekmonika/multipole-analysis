@@ -1,4 +1,4 @@
-function [C_1, C_2] = coefforeverywavelength(E, r, eneis, N, theta, phi, type)
+function [C_1, C_2] = coefForEveryWavelength(E, r, eneis, N, theta, phi, type)
 %Funkcja liczaca wspolczynniki rozproszenia dla danego pola.
 %   
 %   COEFFOREVERYWAVELENGTH(E, r, eneis, N, theta, phi)
