@@ -1,4 +1,4 @@
-function [b, B] = scattcoefficientb(e, k, r, theta, phi)
+function [b, B] = scattCoefficientB(e, k, r, theta, phi)
 %Oblicza wspolczynnik rozproszenia b(1).
 %
 %   SCATTCOEFFICIENTB(l, m, E, R, theta, phi)

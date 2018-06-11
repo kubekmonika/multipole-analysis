@@ -1,4 +1,4 @@
-function [a, A] = scattcoefficienta(e, k, r, theta, phi)
+function [a, A] = scattCoefficientA(e, k, r, theta, phi)
 % Oblicza wspolczynnik rozproszenia a(1).
 %
 %   SCATTCOEFFICIENTA(m, E, R, theta, phi)
