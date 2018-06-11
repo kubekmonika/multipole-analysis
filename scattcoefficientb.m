@@ -1,43 +1,33 @@
-function [b, B] = scattcoefficientb(l, k, e, R, theta, phi)
-%Oblicza wspolczynnik rozproszenia b(l).
+function [b, B] = scattcoefficientb(e, k, r, theta, phi)
+%Oblicza wspolczynnik rozproszenia b(1).
 %
-%   SCATTCOEFFICIENTA(l, m, E, R, theta, phi)
-% 
-%   l - stopien, l >= |m|
-%   k - wartosc wektora falowego
+%   SCATTCOEFFICIENTB(l, m, E, R, theta, phi)
+%
 %   e - rozklad pola (w postaci wektora)
-%   R - promien sfery
-%   phi - katy zenitalne
-%   theta - katy azymutalne
+%   k - wartosc wektora falowego
+%   r - promien sfery
+%   phi - katy azymutalne
+%   theta - katy zenitalne
 
+% l - stopien, l >= |m|
+l = 1;
 b = 0;
-B = ones(1,3);
+B = ones(1, 3);
+e(isnan(e)) = 0;
 for m = -l : 1 : l
-    blm = b_lm(l, m, k, e, R, theta, phi);
+    assert(l >= abs(m), 'Blad: |m| > l')
+    % liczymy harmonike
+    M = vsh(m, theta, phi, r, k, 'M');
+    % zastepujemy NaN wartoscia 0
+    M(isnan(M)) = 0;
+    % wartosc w liczniku
+    licznik = dot(M, e, 2) .* sin(theta);
+    % wartosc w mianowniku
+    mianownik = dot(M, M, 3) .* sin(theta);
+    % wartosc calej calki
+    blm = sum(licznik(:)) / sum(mianownik(:));
+    % liczymy wspolczynnik
     B(m+2) = blm;
     b = b + k^2 * l * (l + 1) * (blm * conj(blm));
 end
-end
-
-function blm = b_lm(l, m, k, e, R, theta, phi)
-% Zwraca wartosc wspolczynnika rozproszenia a_lm
-assert(l >= abs(m), 'Blad: |m| > l')
-% VSH
-% N = vsh('N', n, m, theta, phi, R, k);
-% if m >= 0
-%     M = vsh('M', l, m, theta, phi, R, k);
-% else
-%     M = (-1)^abs(m) * conj(vsh('M', l, abs(m), theta, phi, R, k));
-% end
-M = vshM(m, theta, phi, R, k);
-
-% przeksztalcamy pole
-E = sphreshapefield(e, length(theta), length(phi));
-% zastepujemy NaN wartoscia 0
-M(isnan(M)) = 0;
-E(isnan(E)) = 0;
-% licznik
-licznik = dot(M, E, 3) .* sin(theta);
-mianownik = dot(M, M, 3) .* sin(theta);
-blm = sum(licznik(:)) / sum(mianownik(:));
 end
