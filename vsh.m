@@ -20,10 +20,10 @@ if m >= 0
     h = Hankel(z);
     dh = Hankel(z, true);
     if nargin == 5
-        V1 = vshM(m, theta, phi) * h;
+        V1 = vshM(m, theta, phi);
         V2 = vshN(m, theta, phi, z);
     elseif type == 'M'
-        V1 = vshM(m, theta, phi) * h;
+        V1 = vshM(m, theta, phi);
         V2 = nan;
     elseif type == 'N'
         V2 = nan;
@@ -36,12 +36,12 @@ else
     h = conj(Hankel(z));
     dh = conj(Hankel(z, true));
     if nargin == 5
-        V1 = (-1)^m * factorial(1-m) / factorial(1+m) * conj(h) *...
+        V1 = (-1)^m * factorial(1-m) / factorial(1+m) *...
             vshM(m, theta, phi);
         V2 = (-1)^m * factorial(1-m) / factorial(1+m) * ...
             vshN(m, theta, phi, z);
     elseif type == 'M'
-        V1 = (-1)^m * factorial(1-m) / factorial(1+m) * conj(h) *...
+        V1 = (-1)^m * factorial(1-m) / factorial(1+m) *...
             vshM(m, theta, phi);
         V2 = 0;
     elseif type == 'N'
@@ -56,9 +56,11 @@ end
 
 function M = vshM(m, theta, phi)
 % Liczy pierwszą harmonikę M
+global h
 M = zeros(length(phi), 3);
 M(:,2) = 1j * exp(1j * m * phi) .* Pi(m, theta);
-M(:,3) = exp(1j * m * phi) .* Tau(m, theta);
+M(:,3) = - exp(1j * m * phi) .* Tau(m, theta);
+M = M * h;
 end
 
 function N = vshN(m, theta, phi, z)
@@ -77,7 +79,7 @@ assert(m>=0, 'Error: m < 0 w funkcji Pi')
 if m == 0
     p = zeros(length(theta), 1);
 elseif m == 1
-    p = ones(length(theta), 1);
+    p = -ones(length(theta), 1);
 else
     assert(false, 'Error: m > 1 w funkcji Pi')
 end
@@ -89,7 +91,7 @@ assert(m>=0, 'Error: m < 0 w funkcji Tau')
 if m == 0
     t = -sin(theta);
 elseif m == 1
-    t = -cos(theta);
+    t = cos(theta);
 else
     assert(false, 'Error: m > 1 w funkcji Tau')
 end
@@ -109,7 +111,7 @@ function p = P(m, theta)
 if m == 0
     p = cos(theta);
 elseif m == 1
-    p = sin(theta);
+    p = -sin(theta);
 else
     assert(false, 'Error: m > 1 w funkcji P')
 end
