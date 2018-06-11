@@ -1,24 +1,57 @@
-function [C_a, C_b] = coefforeverywavelength(E, r, eneis, N, theta, phi)
+function [C_1, C_2] = coefforeverywavelength(E, r, eneis, N, theta, phi, type)
 %Funkcja liczaca wspolczynniki rozproszenia dla danego pola.
+%   
+%   COEFFOREVERYWAVELENGTH(E, r, eneis, N, theta, phi)
+% 
+%   E - rozkład pola we współrzędnych sferycznych
+%   r - promień sfery
+%   eneis - dlugości fali
+%   N - współczynnik załamania w otaczającym ośrodku; macierz wartości
+%       dla każdej długości fali lub jedna wartość skalarna; wszystkie
+%       wartości muszą być rzeczywiste
+%   theta - współrzędne zenitalne, 0 <= theta <= pi
+%   phi - współrzędne azymutalne, 0 <= phi <= 2pi
+%   type - typ współczynnika: 'a', 'b' lub obydwa 'ab'
 
-% funkcja liczaca wektor falowy: k^2 = 4 pi^2 n^2 / lambda^2
-% wavevector = @(n, enei) sqrt(4 * pi^2 * n^2 / (enei * 0.1^9)^2);
-% E - rozklad pola, wywolanie we wspolrzednych sferycznych!! - na pewno?
-% c = 299792458; %[m/s] predkosc swiatla w prozni
-% N - wspolczynnik zalamania, musi byc rzeczywisty bo innych przypadkow
-%     teoria w tej metodzie nie przewiduje
-wavevector = @(n, enei) 2 * pi * n / ((enei) * 0.1^9);     % KS: dopisałam mnożenie przez n
+% N -> wspolczynnik zalamania, musi byc rzeczywisty bo innych przypadkow
+% teoria w tej metodzie nie przewiduje.
+assert(isreal(N), 'N musi być rzeczywiste')
+% funkcja liczaca wektor falowy
+wavevector = @(n, enei) 2 * pi * n / ((enei) * 0.1^9);
 
+if isscalar(N)
+    N = ones(size(eneis)) * N;
+end
+
+n_eneis = length(eneis);
 % obliczamy wspolczynniki rozproszenia
-n_N = length(N);
-C_a = zeros(1, n_N);
-C_b = zeros(1, n_N);
-
-% petla for / parfor
-for i = 1: n_N
-    k = wavevector(N(i), eneis(i));
-    e = E(:,:,i);
-    C_a(i) = scattcoefficienta(1, k, e, r, theta, phi);
-    C_b(i) = scattcoefficientb(1, k, e, r, theta, phi);
+if type == 'ab'
+    C_1 = zeros(n_eneis, 1);
+    C_2 = zeros(n_eneis, 1);
+    % wartosc dla kazdej dlugosci fali
+    for i = 1: n_eneis
+        k = wavevector(N(i), eneis(i));
+        e = E(:,:,i);
+        C_1(i) = scattcoefficienta(e, k, r, theta, phi);
+        C_2(i) = scattcoefficientb(e, k, r, theta, phi);
+    end
+elseif type == 'a'
+    C_1 = zeros(n_eneis, 1);
+    C_2 = nan;
+    % wartosc dla kazdej dlugosci fali
+    for i = 1: n_eneis
+        k = wavevector(N(i), eneis(i));
+        e = E(:,:,i);
+        C_1(i) = scattcoefficienta(e, k, r, theta, phi);
+    end
+elseif type == 'b'
+    C_1 = zeros(n_eneis, 1);
+    C_2 = nan;
+    % wartosc dla kazdej dlugosci fali
+    for i = 1: n_eneis
+        k = wavevector(N(i), eneis(i));
+        e = E(:,:,i);
+        C_1(i) = scattcoefficientb(e, k, r, theta, phi);
+    end
 end
 end
