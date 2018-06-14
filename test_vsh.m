@@ -10,9 +10,13 @@ end
 %%
 for i = -1:1:1
     for j = -1:1:1
-        X = squeeze( vsh(i, theta, phi, 10, 10, 'N') );
-        Y = squeeze( vsh(j, theta, phi, 10, 10, 'M') );
-        dotX = dot(Y, X, 2);
+        [X, ~] = vsh(i, theta, phi, 10, 10);
+        [~, Y] = vsh(j, theta, phi, 10, 10);
+        X = squeeze( X );
+        Y = squeeze( Y );
+        X(isnan(X)) = 0;
+        Y(isnan(Y)) = 0;
+        dotX = dot(X, Y, 2);
         dotXsin = dotX .* sin(theta);
         disp({i, j, sum(dotXsin(:))})
     end
@@ -40,3 +44,5 @@ k = K(i);
 e = E(:,:,i);
 [a, A] = scattcoefficienta(1, k, e, r, theta, phi);
 [b, B] = scattcoefficientb(1, k, e, r, theta, phi);
+
+%%

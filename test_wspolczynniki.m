@@ -1,13 +1,6 @@
 %% Skrypt w ktorym obliczamy wspolczynniki rozproszenia.
-
-%% Dane
-% R - promien sfery
-% enei - dlugosc fali
-% e - pole
-% theta, phi - katy sferyczne
-% az, el - wspolrzedne sferyczne
-
 %%
+E(isnan(E)) = 0;
 dotEkart = squeeze( sum( squeeze( dot(Ekart, Ekart, 2) ) .* theta, 1) );
 dotE = squeeze( sum( squeeze( dot(E, E, 2) ) .* theta, 1 ) );
 
@@ -22,7 +15,8 @@ plot(eneis, dotE, 'k--', 'LineWidth', 1)
 % legend('kart', 'sph')
 
 %%
-e = Ekart(:, :, 1);
+e = Ekart(:, :, 5);
+k = K(5);
 e2 = Ekart(:, :, 15);
 
 %%
@@ -43,4 +37,22 @@ zlabel( 'z (nm)' );
 title('Pole elektryczne wokol nanoczastki')
 
 % axis equal tight
+hold off
+
+%%
+figure
+hold on
+
+[sca, scb] = coefForEveryWavelength(E, r, eneis, N, theta, phi, 1);
+yyaxis left
+plot(eneis, sca , 'k-', 'LineWidth', 3)
+plot(eneis, scb , 'b-', 'LineWidth', 3)
+[sca, scb] = coefForEveryWavelength(E, r, eneis, N, theta, phi, 4*pi/146);
+yyaxis right
+plot(eneis, sca , 'r--', 'LineWidth', 2)
+plot(eneis, scb , 'g--', 'LineWidth', 2)
+[sca, scb] = coefForEveryWavelength(E, r, eneis, N, theta, phi, leb.w);
+% yyaxis right
+plot(eneis, sca , 'p-.', 'LineWidth', 1)
+plot(eneis, scb , 'o-.', 'LineWidth', 1)
 hold off
