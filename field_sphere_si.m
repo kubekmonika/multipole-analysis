@@ -1,14 +1,12 @@
-function [E, R, eneis, N, x, y, z] = field_sphere_si(n_points, dir, pol)
+function [E, eneis, N] = field_sphere_si(dir, pol, x, y, z)
 % Oblicza pole we wspolrzednych sferycznych dla krzemowej sfery 
 % o srednicy 200nm, kolejno dla roznych dlugosci fali padajacej.
 % 
 %   FIELD_SPHERE_SI(n_points, dir, pol)
 % 
-%   n_points - liczba punktow do triangulacji; mozliwe wartosci:
-%       32 60 144 169 225 256 289 324 361 400 441 484 529 576 625
-%       676 729 784 841 900 961 1024 1225 1444
 %   dir - kierunek fali padajacej
 %   pol - polaryzacja fali padajacej
+%   x, y, z - wspolrzedne punktow w ktorych liczymy pole
 
 % Definiujemy parametry dla osrodka w ktorym znajduje sie sfera.
 % dlugosci fali
@@ -29,19 +27,12 @@ epstab = { epsconst( 1 ), epstable( 'silicon2.dat' ) };
 %  nanosfera
 p = trisphere( 144, 200 );
 p = comparticle( epstab, { p }, [ 2, 1 ], 1, op );
-% promien otaczającej sfery
-R = 105;
 % solver
 bem = bemsolver( p, op );
 %kierunek fali
 exc = planewave( dir, pol, op );
-% wspolrzedne w ktorych liczymy pole
-sphere = trisphere(n_points, 2*R);
-x = sphere.verts(:,1);
-y = sphere.verts(:,2);
-z = sphere.verts(:,3);
 % macierz wynikowa
-E = zeros(n_points, 3, length(eneis));
+E = zeros(length(x), 3, length(eneis));
 
 % LICZYMY POLE
 multiWaitbar( 'Obliczanie pola', 0, 'Color', 'g', 'CanCancel', 'on' );

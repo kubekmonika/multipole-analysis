@@ -1,7 +1,7 @@
 function [a, A] = scattCoefficientA(e, k, r, theta, phi)
 % Oblicza wspolczynnik rozproszenia a(1).
 %
-%   SCATTCOEFFICIENTA(m, E, R, theta, phi)
+%   SCATTCOEFFICIENTA(m, E, R, theta, phi, w)
 % 
 %   e - rozklad pola (w postaci wektora)
 %   k - wartosc wektora falowego
@@ -17,7 +17,7 @@ e(isnan(e)) = 0;
 for m = -l : 1 : l
     assert(l >= abs(m), 'Blad: |m| > l')
     % liczymy harmonike
-    N = vsh(m, theta, phi, r, k, 'N');
+    [N, ~] = vsh(m, theta, phi, r, k);
     % zastepujemy NaN wartoscia 0
     N(isnan(N)) = 0;
     % wartosc w liczniku

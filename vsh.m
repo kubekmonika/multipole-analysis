@@ -1,4 +1,4 @@
-function [V1, V2] = vsh(m, theta, phi, r, k, type)
+function [V1, V2] = vsh(m, theta, phi, r, k)
 % Liczy wektorowe harmoniki sferyczne (VSH) pierwszego stopnia
 % na sferze o promieniu r i w punktach o wpółrzędnych określonych 
 % przez kąty theta i phi.
@@ -10,47 +10,24 @@ function [V1, V2] = vsh(m, theta, phi, r, k, type)
 %   phi - współrzędne azymutalne, 0 <= phi <= 2pi
 %   r - promień sfery
 %   k - wartość wektora falowego
-%   (opcjonalnie) type - typ harmoniki: 'M' lub 'N'
 % 
-% Jeżeli typ nie jest określony to zwraca obie VSH w kolejności: [M, N].
+% Zwraca obie VSH w kolejności: [N, M].
 
 z = k * r;
 global h dh
 if m >= 0
     h = Hankel(z);
     dh = Hankel(z, true);
-    if nargin == 5
-        V1 = vshM(m, theta, phi);
-        V2 = vshN(m, theta, phi, z);
-    elseif type == 'M'
-        V1 = vshM(m, theta, phi);
-        V2 = nan;
-    elseif type == 'N'
-        V2 = nan;
-        V1 = vshN(m, theta, phi, z);
-    else
-        assert(false, 'Zły typ harmoniki')
-    end
+    V1 = vshN(m, theta, phi, z);
+    V2 = vshM(m, theta, phi);
 else
     m = abs(m);
     h = conj(Hankel(z));
     dh = conj(Hankel(z, true));
-    if nargin == 5
-        V1 = (-1)^m * factorial(1-m) / factorial(1+m) *...
-            vshM(m, theta, phi);
-        V2 = (-1)^m * factorial(1-m) / factorial(1+m) * ...
-            vshN(m, theta, phi, z);
-    elseif type == 'M'
-        V1 = (-1)^m * factorial(1-m) / factorial(1+m) *...
-            vshM(m, theta, phi);
-        V2 = 0;
-    elseif type == 'N'
-        V2 = 0;
-        V1 = (-1)^m * factorial(1-m) / factorial(1+m) * ...
-            vshN(m, theta, phi, z);
-    else
-        assert(false, 'Zły typ harmoniki')
-    end
+    V1 = (-1)^m * factorial(1-m) / factorial(1+m) * ...
+        vshN(m, theta, phi, z);
+    V2 = (-1)^m * factorial(1-m) / factorial(1+m) * ...
+        vshM(m, theta, phi);
 end
 end
 
@@ -91,7 +68,7 @@ assert(m>=0, 'Error: m < 0 w funkcji Tau')
 if m == 0
     t = -sin(theta);
 elseif m == 1
-    t = cos(theta);
+    t = -cos(theta);
 else
     assert(false, 'Error: m > 1 w funkcji Tau')
 end
@@ -111,7 +88,7 @@ function p = P(m, theta)
 if m == 0
     p = cos(theta);
 elseif m == 1
-    p = -sin(theta);
+    p = - abs(sin(theta));
 else
     assert(false, 'Error: m > 1 w funkcji P')
 end
