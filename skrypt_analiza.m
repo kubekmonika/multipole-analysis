@@ -7,64 +7,102 @@
 % az, el - wspolrzedne sferyczne
 % N - wspolczynnik zalamania w osrodku otaczajacym czastke
 
+%% obliczamy wspolrzedne
+leb = getLebedevSphere(170);
+[az, el, ~] = cart2sph(leb.x, leb.y, leb.z);
+R = ones(size(az)) * 105;
+[x, y, z] = sph2cart(az, el, R);
+
 %% obliczamy pole dla calego przekroju dlugosci fali
-dir = [0, 0, 1];
-pol = [1, 0, 0];
-[Ekart, R, eneis, N, x, y, z] = field_sphere_si(60, dir, pol);
+dir = [1, 0, 0];
+pol = [0, 0, 1];
+[Ekart, eneis, N] = field_sphere_si(dir, pol, x, y, z);
 
 %% obliczamy wspolrzedne
-r = R * 1e-9;
-[phi, theta] = cart2sph(x,y,z);
-theta = pi/2 - theta;
+r = R(1) * 1e-9;
+[~, theta, phi] = cartToSph(x, y, z);
 
-%%
-% na podstawie: https://www.mathworks.com/help/phased/ref/cart2sphvec.html
-cart2sphvec = @(phi, theta) [-sin(phi),          cos(phi),         0;...
-                         -sin(theta)*cos(phi), -sin(theta)*sin(phi), cos(theta);...
-                          cos(theta)*cos(phi),  cos(theta)*sin(phi), sin(theta)];
+% transformacja wspolrzednych
+% na podstawie: https://en.wikipedia.org/wiki/Vector_fields_in_cylindrical_and_spherical_coordinates#Spherical_coordinate_system
+
+cart2sphvec = @(theta, phi) [sin(theta)*cos(phi), sin(theta)*sin(phi),  cos(theta);...
+                             cos(theta)*cos(phi), cos(theta)*sin(phi), -sin(theta);...
+                                       -sin(phi),            cos(phi),          0];
 
 E = 0 * Ekart;
 for i = 1 : size(E, 3)
     for j = 1 : size(E,1)
-        E(j,:,i) = cart2sphvec(phi(j), theta(j)) * Ekart(j,:,i)';
+        E(j,:,i) = cart2sphvec(theta(j), phi(j)) * Ekart(j,:,i)';
     end
 end
+E(isnan(E)) = 0;
 
-%%
-dotEkart = squeeze( sum( squeeze( dot(Ekart, Ekart, 2) ) .* theta, 1) );
-dotE = squeeze( sum( squeeze( dot(E, E, 2) ) .* theta, 1 ) );
+%
+dotEkart = squeeze( sum( squeeze( dot(Ekart, Ekart, 2) ) .* sin(theta) .* leb.w, 1) );
+dotE = squeeze( sum( squeeze( dot(E, E, 2) ) .* sin(theta) .* leb.w, 1 ) );
 
-%% obliczamy wspolczynniki rozproszenia
+% obliczamy wspolczynniki rozproszenia
 % N = 1;
-[C_a, C_b] = coefforeverywavelength(E, r, eneis, N, theta, phi, 'ab');
+[C_a, C_b] = coefForEveryWavelength(E, r, eneis, N, theta, phi);
 
 %% wykres
+od = 5;
 figure
 hold on
 subplot(2,1,1)
-yyaxis left
-plot(eneis, C_a, '-')
-yyaxis right
-plot(eneis, C_b, '--')
+% yyaxis left
+plot(eneis(od:end), C_a(od:end), '-', eneis(od:end), C_b(od:end), '--')
+% yyaxis right
+% plot(eneis, C_b, '--')
 legend('a1', 'b1')
+title('dir: Z, pol: Y')
 
 subplot(2,1,2)
 yyaxis left
-plot(eneis, C_a + C_b, '--')
+C_ab = C_a + C_b;
+plot(eneis(od:end), C_ab(od:end), '--')
 yyaxis right
-plot(eneis, dotE, '-', 'LineWidth', 2)
+plot(eneis(od:end), dotE(od:end), '-', 'LineWidth', 2)
 legend('suma', 'dot(E,E)')
+
+
+%%
+dotE = squeeze( sum( squeeze( dot(E, E, 2) ) .* sin(theta), 1 ) ) /146 * 4 * pi;
+dotEleb = squeeze( sum( squeeze( dot(E, E, 2) ).* leb.w, 1 ) );
+
+od = 1;
+figure
+hold on
+% yyaxis left
+plot(eneis(od:end), dotE(od:end), 'k-', 'LineWidth', 2)
+% yyaxis right
+plot(eneis(od:end), dotEleb(od:end), 'r--', 'LineWidth', 2)
+
+legend('E', 'Eleb')
+
+%%
+leb_xz = squeeze( sum( squeeze( dot(E, E, 2) ).* leb.w, 1 ) );
+
+od = 1;
+figure
+hold on
+% yyaxis left
+plot(eneis(od:end), leb_xy(od:end), 'k-', 'LineWidth', 2)
+% yyaxis right
+plot(eneis(od:end), leb_xz(od:end), 'r--', 'LineWidth', 2)
+
+legend('xy', 'xz')
 
 %%
 %  nanosphere
 p = trisphere( 144, 10 );
 %  plot particle
-% plot( p, 'EdgeColor', 'b' );  hold on;
+plot( p, 'EdgeColor', 'b' );  hold on;
 %  plot centroids in black
 % plot3( p.pos( :, 1 ), p.pos( :, 2 ), p.pos( :, 3 ), 'k.' );
 %  plot vertices at edges
-p.verts(:,1) = 0;
-plot3( p.verts( :, 1 ), p.verts( :, 2), p.verts( :, 3 ), 'rs' );
+% p.verts(:,1) = 0;
+plot3( p.verts( :, 1 ), p.verts( :, 2), p.verts( :, 3 ), 'ro' );
 %  plot vertices for curved boundary element integration
 % plot3( p.verts2( :, 1 ), p.verts2( :, 2 ), p.verts2( :, 3 ), 'g.' );
 xlabel( 'x (nm)' );
