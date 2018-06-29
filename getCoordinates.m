@@ -14,7 +14,7 @@ function [x, y, z, w, r, theta, phi] = getCoordinates(n_points, R)
 %   x, y, z - współrzędne kartezjańskie
 %   w - wagi dla każdego z punktów, potrzebne do całkowania
 %   r - promień sfery [m]
-%   thtea, phi - współrzędne sferyczne punktów
+%   theta, phi - współrzędne sferyczne punktów
 
 % liczba punktów
 n = getNPoints(n_points);
