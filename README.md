@@ -21,4 +21,5 @@ Przykłady użycia dostępne są w folderze *skrypty*.
 
 ## Źródła
 [1] Stefan Mühlig, Christoph Menzel, Carsten Rockstuhl, Falk Lederer, *Multipole analysis of meta-atoms*, Metamaterials, Volume 5, Issues 2–3, 2011.
+
 [2] Funkcja *getLebedevSphere.m*, Copyright (c) 2010, Robert Parrish, All rights reserved.
