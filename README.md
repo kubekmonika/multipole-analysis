@@ -1,6 +1,8 @@
 # Analiza multipolowa nanostruktur
 Mini-toolbox do analizy multipolowej nanostruktur zaimplementowany w języku MATLAB &reg;.
 
+![Obrazek1](./images/two_spheres_stacked.png) 
+
 ## Wprowadzenie
 Projekt powstał w ramach pracy magisterskiej. Celem jest stworzenie narzędzi umożliwiających analizę multipolową pola elektromagnetycznego rozproszonego na nanostrukturach, w szczególności rozkład na momenty dipolowe: elektryczny i magnetyczny.
 
