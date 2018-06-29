@@ -1,7 +1,7 @@
 function [b, B] = scattCoefficientB(e, k, r, theta, phi, w)
-%Oblicza wspolczynnik rozproszenia b(1).
+% Oblicza wspolczynnik rozproszenia b(1).
 %
-%   SCATTCOEFFICIENTB(l, m, E, R, theta, phi, w)
+%   SCATTCOEFFICIENTB(e, k, r, theta, phi, w)
 %
 %   e - rozklad pola (w postaci wektora)
 %   k - wartosc wektora falowego
