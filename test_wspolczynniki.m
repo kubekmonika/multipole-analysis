@@ -56,3 +56,11 @@ plot(eneis, scb , 'g--', 'LineWidth', 2)
 plot(eneis, sca , 'p-.', 'LineWidth', 1)
 plot(eneis, scb , 'o-.', 'LineWidth', 1)
 hold off
+
+%% 
+k = K(16);
+e = E(:,:,16);
+[~, A] = scattCoefficientA(e, k, r, theta, phi, leb.w);
+
+%%
+[ A(3) - A(1); 1j*(A(3)+A(1)); -sqrt(2)*A(2)]

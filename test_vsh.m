@@ -10,14 +10,14 @@ end
 %%
 for i = -1:1:1
     for j = -1:1:1
-        [X, ~] = vsh(i, theta, phi, 10, 10);
-        [~, Y] = vsh(j, theta, phi, 10, 10);
+        [X, ~] = vsh(i, theta, phi, r, K(10));
+        [~, Y] = vsh(j, theta, phi, r, K(10));
         X = squeeze( X );
         Y = squeeze( Y );
         X(isnan(X)) = 0;
         Y(isnan(Y)) = 0;
         dotX = dot(X, Y, 2);
-        dotXsin = dotX .* sin(theta);
+        dotXsin = dotX .* leb.w;
         disp({i, j, sum(dotXsin(:))})
     end
 end

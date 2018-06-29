@@ -8,20 +8,16 @@
 % N - wspolczynnik zalamania w osrodku otaczajacym czastke
 
 %% obliczamy wspolrzedne
-leb = getLebedevSphere(170);
-[az, el, ~] = cart2sph(leb.x, leb.y, leb.z);
-R = ones(size(az)) * 105;
-[x, y, z] = sph2cart(az, el, R);
+n_points = 150;
+R = 105;
+[x, y, z, w, r, theta, phi] = getCoordinates(n_points, R);
 
 %% obliczamy pole dla calego przekroju dlugosci fali
-dir = [1, 0, 0];
-pol = [0, 0, 1];
+dir = [0, 0, 1];
+pol = [0, 1, 0];
 [Ekart, eneis, N] = field_sphere_si(dir, pol, x, y, z);
 
-%% obliczamy wspolrzedne
-r = R(1) * 1e-9;
-[~, theta, phi] = cartToSph(x, y, z);
-
+%%
 % transformacja wspolrzednych
 % na podstawie: https://en.wikipedia.org/wiki/Vector_fields_in_cylindrical_and_spherical_coordinates#Spherical_coordinate_system
 
@@ -38,12 +34,12 @@ end
 E(isnan(E)) = 0;
 
 %
-dotEkart = squeeze( sum( squeeze( dot(Ekart, Ekart, 2) ) .* sin(theta) .* leb.w, 1) );
-dotE = squeeze( sum( squeeze( dot(E, E, 2) ) .* sin(theta) .* leb.w, 1 ) );
+% dotEkart = squeeze( sum( squeeze( dot(Ekart, Ekart, 2) ) .* leb.w, 1) );
+dotE = squeeze( sum( squeeze( dot(E, E, 2) ) .* leb.w, 1 ) );
 
 % obliczamy wspolczynniki rozproszenia
 % N = 1;
-[C_a, C_b] = coefForEveryWavelength(E, r, eneis, N, theta, phi);
+[C_a, C_b] = coefForEveryWavelength(E, r, eneis, N, theta, phi, leb.w);
 
 %% wykres
 od = 5;
