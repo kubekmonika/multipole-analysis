@@ -1,7 +1,7 @@
 function [r, theta, phi] = cartToSph(X, Y, Z)
 % Funkcja przeliczająca współrzędne z kartezjańskich na sferyczne.
 %
-%   CART2SPH(x, y, z)
+%   CARTTOSPH(x, y, z)
 %   
 %   X, Y, Z - wspołrzędne sferyczne
 %
