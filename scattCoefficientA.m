@@ -1,4 +1,4 @@
-function [a, A] = scattCoefficientA(e, k, r, theta, phi)
+function [a, A] = scattCoefficientA(e, k, r, theta, phi, w)
 % Oblicza wspolczynnik rozproszenia a(1).
 %
 %   SCATTCOEFFICIENTA(m, E, R, theta, phi, w)
@@ -8,6 +8,7 @@ function [a, A] = scattCoefficientA(e, k, r, theta, phi)
 %   r - promien sfery
 %   phi - katy azymutalne
 %   theta - katy zenitalne
+%   w - wagi dla każdego punktu
 
 % l - stopien, l >= |m|
 l = 1;
@@ -21,9 +22,9 @@ for m = -l : 1 : l
     % zastepujemy NaN wartoscia 0
     N(isnan(N)) = 0;
     % wartosc w liczniku
-    licznik = dot(N, e, 2) .* sin(theta);
+    licznik = dot(N, e, 2) .* w;
     % wartosc w mianowniku
-    mianownik = dot(N, N, 2) .* sin(theta);
+    mianownik = dot(N, N, 2) .* w;
     % wartosc calej calki
     alm = sum(licznik(:)) / sum(mianownik(:));
     % liczymy wspolczynnik

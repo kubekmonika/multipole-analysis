@@ -1,4 +1,4 @@
-function [sca, scb] = coefForEveryWavelength(E, r, eneis, N, theta, phi)
+function [sca, scb] = coefForEveryWavelength(E, r, eneis, N, theta, phi, w)
 %Funkcja liczaca wspolczynniki rozproszenia dla danego pola.
 %   
 %   COEFFOREVERYWAVELENGTH(E, r, eneis, N, theta, phi, w)
@@ -11,6 +11,7 @@ function [sca, scb] = coefForEveryWavelength(E, r, eneis, N, theta, phi)
 %       wartości muszą być rzeczywiste
 %   theta - współrzędne zenitalne, 0 <= theta <= pi
 %   phi - współrzędne azymutalne, 0 <= phi <= 2pi
+%   w - wagi dla każdego punktu
 
 assert(isreal(N), 'N musi być rzeczywiste - teoria nie przewiduje innych przypadków')
 % funkcja liczaca wektor falowy
@@ -28,7 +29,7 @@ scb = zeros(n_eneis, 1);
 for i = 1: n_eneis
     k = wavevector(N(i), eneis(i));
     e = E(:,:,i);
-    sca(i) = scattCoefficientA(e, k, r, theta, phi);
-    scb(i) = scattCoefficientB(e, k, r, theta, phi);
+    sca(i) = scattCoefficientA(e, k, r, theta, phi, w);
+    scb(i) = scattCoefficientB(e, k, r, theta, phi, w);
 end
 end

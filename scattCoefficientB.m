@@ -1,4 +1,4 @@
-function [b, B] = scattCoefficientB(e, k, r, theta, phi)
+function [b, B] = scattCoefficientB(e, k, r, theta, phi, w)
 %Oblicza wspolczynnik rozproszenia b(1).
 %
 %   SCATTCOEFFICIENTB(l, m, E, R, theta, phi, w)
@@ -8,6 +8,7 @@ function [b, B] = scattCoefficientB(e, k, r, theta, phi)
 %   r - promien sfery
 %   phi - katy azymutalne
 %   theta - katy zenitalne
+%   w - wagi dla każdego punktu
 
 % l - stopien, l >= |m|
 l = 1;
@@ -21,9 +22,9 @@ for m = -l : 1 : l
     % zastepujemy NaN wartoscia 0
     M(isnan(M)) = 0;
     % wartosc w liczniku
-    licznik = dot(M, e, 2) .* sin(theta);
+    licznik = dot(M, e, 2) .* w;
     % wartosc w mianowniku
-    mianownik = dot(M, M, 3) .* sin(theta);
+    mianownik = dot(M, M, 3) .* w;
     % wartosc calej calki
     blm = sum(licznik(:)) / sum(mianownik(:));
     % liczymy wspolczynnik
