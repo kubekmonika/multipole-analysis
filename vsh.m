@@ -1,17 +1,16 @@
 function [V1, V2] = vsh(m, theta, phi, r, k)
-% Liczy wektorowe harmoniki sferyczne (VSH) pierwszego stopnia
-% na sferze o promieniu r i w punktach o wpółrzędnych określonych 
-% przez kąty theta i phi.
+% First order vector spherical harmonics (VSH) over a sphere with radius r
+% at points given by angles theta and phi.
 % 
 %   VSH(m, theta, phi, r, k)
 %   
-%   m - rząd, |m|<=1
-%   theta - współrzędne zenitalne, 0 <= theta <= pi
-%   phi - współrzędne azymutalne, 0 <= phi <= 2pi
-%   r - promień sfery
-%   k - wartość wektora falowego
+%   m - order, |m|<=1
+%   theta - elevation, 0 <= theta <= pi
+%   phi - azimuth, 0 <= phi <= 2pi
+%   r - radius
+%   k - wavenumber
 % 
-% Zwraca obie VSH w kolejności: [N, M].
+% Returns VSH: [N, M].
 
 z = k * r;
 global h dh
@@ -32,7 +31,7 @@ end
 end
 
 function M = vshM(m, theta, phi)
-% Liczy pierwszą harmonikę M
+% First harmonic M
 global h
 M = zeros(length(phi), 3);
 M(:,2) = 1j * exp(1j * m * phi) .* Pi(m, theta);
@@ -41,7 +40,7 @@ M = M * h;
 end
 
 function N = vshN(m, theta, phi, z)
-% Liczy drugą harmonikę N
+% Second harmonic N
 global h dh
 N = zeros(length(phi), 3);
 alpha = exp(1j * m * phi) * (h / z + dh);
@@ -51,31 +50,31 @@ N(:,3) = 1j * alpha .* Pi(m, theta);
 end
 
 function p = Pi(m, theta)
-% Liczy funkcje Pi 
-assert(m>=0, 'Error: m < 0 w funkcji Pi')
+% Calculates Pi function
+assert(m>=0, 'Error: m < 0')
 if m == 0
     p = zeros(length(theta), 1);
 elseif m == 1
     p = -ones(length(theta), 1);
 else
-    assert(false, 'Error: m > 1 w funkcji Pi')
+    assert(false, 'Error: m > 1')
 end
 end
 
 function t = Tau(m, theta)
-% Liczy funkcje Tau
-assert(m>=0, 'Error: m < 0 w funkcji Tau')
+% Calculates Tau function
+assert(m>=0, 'Error: m < 0')
 if m == 0
     t = -sin(theta);
 elseif m == 1
     t = -cos(theta);
 else
-    assert(false, 'Error: m > 1 w funkcji Tau')
+    assert(false, 'Error: m > 1')
 end
 end
 
 function h = Hankel(z, derivative)
-% Liczy funkcje Hankela pierwszego rodzaju lub jej pochodna dla n=1
+% Hankel function of the first kind or its derivative
 if nargin == 1
     h = - exp(1j * z) * (z + 1j) / z^2;
 elseif (nargin == 2) && (derivative == true)
@@ -84,12 +83,12 @@ end
 end 
 
 function p = P(m, theta)
-% Liczy funkcje Legendre'a pierwszego rodzaju
+% Legendre function of the first kind
 if m == 0
     p = cos(theta);
 elseif m == 1
     p = - abs(sin(theta));
 else
-    assert(false, 'Error: m > 1 w funkcji P')
+    assert(false, 'Error: m > 1')
 end
 end

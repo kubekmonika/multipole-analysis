@@ -1,33 +1,34 @@
 function [a, A] = scattCoefficientA(e, k, r, theta, phi, w)
-% Oblicza wspolczynnik rozproszenia a(1).
+% Scattering coefficient a(1).
 %
 %   SCATTCOEFFICIENTA(e, k, r, theta, phi, w)
 % 
-%   e - rozklad pola (w postaci wektora)
-%   k - wartosc wektora falowego
-%   r - promien sfery
-%   phi - katy azymutalne
-%   theta - katy zenitalne
-%   w - wagi dla każdego punktu
+%   e - electric field; as a vector
+%   k - wavenumber
+%   r - radius
+%   theta - elevation, 0 <= theta <= pi
+%   phi - azimuth, 0 <= phi <= 2pi
+%   w - weights
 
-% l - stopien, l >= |m|
+% l - degree, l >= |m|
 l = 1;
 a = 0;
 A = ones(1, 3);
+% removing NaNs
 e(isnan(e)) = 0;
 for m = -l : 1 : l
     assert(l >= abs(m), 'Blad: |m| > l')
-    % liczymy harmonike
+    % harmonic
     [N, ~] = vsh(m, theta, phi, r, k);
-    % zastepujemy NaN wartoscia 0
+    % replacing NaN with 0
     N(isnan(N)) = 0;
-    % wartosc w liczniku
-    licznik = dot(N, e, 2) .* w;
-    % wartosc w mianowniku
-    mianownik = dot(N, N, 2) .* w;
-    % wartosc calej calki
-    alm = sum(licznik(:)) / sum(mianownik(:));
-    % liczymy wspolczynnik
+    % integrand in the nominator
+    nominator = dot(N, e, 2) .* w;
+    % integrand in the denominator
+    denominator = dot(N, N, 2) .* w;
+    % counting the integrals
+    alm = sum(nominator(:)) / sum(denominator(:));
+    % scattering coefficient
     A(m+2) = alm;
     a = a + k^2 * l * (l + 1) * (alm * conj(alm));
 end
