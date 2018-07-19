@@ -1,18 +1,18 @@
-%% Dane
-% R - promien sfery
-% eneis - dlugosc fali
-% Ecart - pole we wspolrzednych kartezjanskich
-% E - pole we wspolrzednych sferycznych
-% theta, phi - katy sferyczne
-% az, el - wspolrzedne sferyczne
-% N - wspolczynnik zalamania w osrodku otaczajacym czastke
+%% Data
+% R - radius
+% eneis - wavelength
+% Ecart - elecric field in cartesian coordinates
+% E - electric field in spherical coordinates
+% theta, phi - spherical angles
+% az, el - spherical coordinates
+% N - refractive index
 
-%% Skrypt dla pary sfer
+%% Pair of spheres
 op = bemoptions( 'sim', 'ret', 'interp', 'curv' );
-%  tablica funkcji dielektrycznych
+% dielectric constants table
 epstab = { epsconst( 1 ), epstable( 'silicon2.dat'), epstable( 'silicon2.dat' ) };
 
-% parametry sfer
+% parameters
 diameter = 150;
 gap      =  10;
 
@@ -21,47 +21,49 @@ p2 = shift( trisphere( 256, diameter ), [ - diameter/2.0 - gap/2.0, 0, 0 ] );
 
 p = comparticle( epstab, { p1, p2 }, [ 2, 1; 3, 1 ], 1, 2, op );
 
-%% obliczamy wspolrzedne
+%% calculate coordinates
 n_points = 350;
 R = 160;
 [x, y, z, w, r, theta, phi] = getCoordinates(n_points, R);
 
-%% Definiujemy parametry dla osrodka
-% dlugosci fali
-eneis = linspace(400, 720, 64);  
-% relacja dyspersyjna
+%% Medium parameters
+% wavelength
+eneis = linspace(450, 720, 54);  
+% refractive index - vacuume
 N = ones(length(eneis), 1);
 
-%% Fala
+%% Wave parameters
+% direction
 dir = [1, 0, 0];
+% polarization
 pol = [0, 0, 1];
-
-%% Solwer
-% solver
-bem = bemsolver( p, op );
-% kierunek fali
+% wave
 exc = planewave( dir, pol, op );
 
-%% Liczymy pole
+%% Solver
+% solver
+bem = bemsolver( p, op );
 
-% macierz wynikowa
+%% Calculation
+
+% results matrix
 Ecart = zeros(length(x), 3, length(eneis));
 
-multiWaitbar( 'Obliczanie pola', 0, 'Color', 'g', 'CanCancel', 'on' );
+multiWaitbar( 'Calculating field', 0, 'Color', 'g', 'CanCancel', 'on' );
 n_eneis = length(eneis);
 for i = 1 : n_eneis
     Ecart(:,:,i) = calculateField(eneis(i), x, y, z, op, p, bem, exc);
-    multiWaitbar( 'Obliczanie pola', i / n_eneis );
+    multiWaitbar( 'Calculating field', i / n_eneis );
 end
-multiWaitbar('Obliczanie pola', 'Close');
+multiWaitbar('Calculating field', 'Close');
 
 E = eCartToSph(Ecart, theta, phi);
 dotE = squeeze( sum( squeeze( dot(E, E, 2) ) .* w, 1 ) );
 
-%% Liczymy wspolczynniki rozproszenia
+%% Calculating scattering coefficients
 [C_a, C_b] = coefForEveryWavelength(E, r, eneis, N, theta, phi, w);
 
-%% Wykres 1
+%% Figure 1
 figure
 hold on
 subplot(2,1,1)
@@ -77,7 +79,7 @@ plot(eneis, dotE, '-', 'LineWidth', 2)
 legend('a+b', 'dot(E,E)')
 xlabel( 'Wavelength (nm)', 'FontSize', 11 );
 
-%% Wykres 2
+%% Figure 2
 figure('pos', [50 50 700 400])
 hold on
 plot(eneis, C_a, '-r', 'LineWidth', 2)
@@ -85,7 +87,7 @@ plot(eneis, C_b, '-b', 'LineWidth', 2)
 legend('a1', 'b1')
 xlabel( 'Wavelength (nm)', 'FontSize', 13 );
 
-%% Sfera otaczająca badany układ
+%% Sphere around the structure
 
 figure
 hold on
